@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BeOpen žemėlapių naršyklė</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"/>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;600&display=swap" rel="stylesheet">
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css"/>
+    <link rel="stylesheet" type="text/css" href="styles/main.css" />
+
+  </head>
+
+  <body>
+<!-- Load the `maplibre-gl-geocoder` plugin. -->
+<script src="https://unpkg.com/@maplibre/maplibre-gl-geocoder@1.2.0/dist/maplibre-gl-geocoder.min.js"></script>
+<link
+rel="stylesheet"
+href="https://unpkg.com/@maplibre/maplibre-gl-geocoder@1.2.0/dist/maplibre-gl-geocoder.css"
+type="text/css"
+/>
+
+<!-- header info -->
+    <div class="outer-container">
+        <div class="container-fluid" >
+            <div class="row" >
+                <div class="col-md-3 d-flex align-items-center">
+                    <img src="img/logo.svg" alt="Logo" class="mb-2" style="width: 80px; height: 80px; margin-top: 1vh">
+                    <div class="line"></div>
+                    <p class="my-4" id="boldt">Projekto įkvėpta naršyklė</p>
+                </div>
+                <div class="col-md-4 my-auto text-center">
+                <!-- Button trigger modal abt site -->
+                <button class="btn custom-btn m-2" data-bs-toggle="modal" href="#aboutsite" id="boldt">INFORMACIJA APIE SVETAINĘ</button>
+                </div>
+                <!-- links to data distributors -->
+                <div class="col-5" >
+                    <div id="rcorners" class="d-flex align-items-center my-1 px-2" style="background-color: white;">
+                        <img src="img/github.svg" alt="Logo" style="width: 20px; height: 20px;">
+                        <a href="https://github.com/DaVaiva/uni_assignment" target="_blank" class="m-2" >Github kodas</a>
+                        <img src="img/data_source.svg" alt="Logo" style="width: 20px; height: 20px;"> <p class = "m-1" style="color:#1C3AFF" id="boldt">Duomenų šaltiniai:</p>
+                        <a href="https://www.stat.gov.lt/" target="_blank" class="m-2">VDA</a>
+                        <a href="https://data-vplanas.opendata.arcgis.com/datasets" target="_blank" class="m-2">Vilniaus planas</a>
+                        <a href="https://inva.biip.lt/" target="_blank" class="m-2">Aplinkos ministerija</a>
+                    </div>
+                <!-- Map meniu bar -->
+                    <div class="d-flex align-items-center mb-2 justify-content-end" >
+                        <div class="col-auto d-flex align-items-center" style="border: 2px solid blanchedalmond;border-radius: 20px;padding-left:5px;background-color: white;">
+                            <img src="img/menu.svg" alt="Logo" style="width: 20px; height: 20px; margin-right: 1vh;">
+                            <span
+                            role="button"
+                            class="material-symbols-outlined me-2 curs"
+                            onclick="toggleSidebar()"
+                            style = "font-size: 2.2vh; color:#1C3AFF;" id="boldt">Žemėlapio sluoksnių meniu</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="mapapp" class="container-fluid">
+            <div id="mapapp-content" class="row bg-body-tertiary">
+                <div id="map" class="col-12"></div>
+                <div id="info"></div>
+                <button id="fit">[Miesto aprėptis]</button>
+                <div id="mapapp-sidebar" class="col-2" style="background-color: blanchedalmond;">
+                <div class="row">
+                <div class="bg-white py-2 border-bottom" id="boldt" style="text-align: center;">Teminiai žemėlapiai</div>
+                <div class="py-2 basemap-gallery">
+                  <div class="image-container">
+                    <img
+                      id="layer-btn-demo-layer"
+                      src="img/gyv_service.png"
+                      class="img-fluid pb-3"
+                      alt="Gyventojų statistikos žemėlapis"
+                      onclick="toggleLayer('demo-layer', this);"
+                      role="button"
+                    />
+                    <p class="image-caption">Gyventojų statistika</p>
+                  </div>
+                  <div class="image-container">  
+                    <img
+                      id="layer-btn-vp-marsrutai"
+                      src="img/route_service.png"
+                      class="img-fluid pb-3"
+                      alt="Pėsčiųjų takų maršrutų žemėlapis"
+                      onclick="toggleLayer('vp-marsrutai');"
+                      role="button"
+                      />
+                      <p class="image-caption">Pėsčiųjų takų maršrutai</p>
+                  </div>
+                  <div class="image-container">
+                      <img
+                      id="layer-btn-vp-medziai"
+                      src="img/tree_service.png"
+                      class="img-fluid pb-3"
+                      alt="Pavojingų medžių žemėlapis"
+                      onclick="toggleLayer('vp-medziai');"
+                      role="button"
+                      />
+                      <p class="image-caption">Pavojų keliantys medžiai</p>
+                  </div>
+                  <div class="image-container">
+                      <img
+                      id="layer-btn-am-invaziniai"
+                      src="img/invasive_service.png"
+                      class="img-fluid pb-3"
+                      alt="Invazinių augalų radaviečių žemėlapis"
+                      onclick="toggleLayer('am-invaziniai');"
+                      role="button"
+                      />
+                      <p class="image-caption">Invazinių augalų radavietės</p>
+                  </div>    
+                </div>
+                </div>
+                <div class="row">
+                <div class="bg-white py-2 border-bottom" id="boldt" style="text-align: center;">Foniniai žemėlapiai</div>
+                <div class="py-2 basemap-gallery">
+                    <img
+                    src="img/field_basemap.png"
+                    class="img-fluid pb-3 active"
+                    alt="Lauko foninis žemėlapis"
+                    onclick="changeMapStyle('default');"
+                    role="button"
+                    />
+                    <img
+                    src="img/thematic_basemap.png"
+                    class="img-fluid pb-3"
+                    alt="Teminis foninis žemėlapis"
+                    onclick="changeMapStyle('theme');"
+                    role="button"
+                    />
+                    <img
+                    src="img/topo_basemap.png"
+                    class="img-fluid pb-3"
+                    alt="Topografinis foninis žemėlapis"
+                    onclick="changeMapStyle('topo');"
+                    role="button"/>
+                </div>
+                </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+<!-- about mapapp - button trigger modal -->
+    <div class="modal fade" id="aboutsite" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1" style="width:100%">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalToggleLabel" style="color:#1C3AFF">„BeOpen“ žemėlapių naršyklė</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              Ši svetainė skirta universitetinei užduočiai atlikti. Sukurti žemėlapių stiliai, taip pat išpublikuoti QGIS server teminių duomenų sluoksniai. Visa tai galima nagrinėti šioje žemėlapių naršyklėje.
+              <br><br>Svetainę 2023-12-21 sukūrė Vaiva Venckauskaitė<br>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous">
+    </script>
+
+    <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
+
+    <script src="js/main.js"></script>
+
+  </body>
